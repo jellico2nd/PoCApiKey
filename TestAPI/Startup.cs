@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using TestAPI.Authorization;
+using TestAPI.Resources;
 
 namespace TestAPI
 {
@@ -19,6 +22,7 @@ namespace TestAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApiKeyRepository>(options => options.UseInMemoryDatabase("APIProxyDb"));
             services.AddHttpContextAccessor();
             services.AddControllers();
             services.AddAuthentication(options =>
@@ -49,5 +53,6 @@ namespace TestAPI
                 endpoints.MapControllers();
             });
         }
+
     }
 }

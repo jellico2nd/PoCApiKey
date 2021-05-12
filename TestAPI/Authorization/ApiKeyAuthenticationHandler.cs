@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -11,10 +13,12 @@ namespace TestAPI.Authorization
 {
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
     {
-        public ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyAuthenticationOptions> options,  ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) :
+        private ApiKeyRepository database;
+        public ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyAuthenticationOptions> options,  ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, ApiKeyRepository keyRepository) :
             base(options, logger, encoder, clock)
         {
-            
+            keyRepository.Database.EnsureCreated();
+            database = keyRepository;
         }
 
         
@@ -28,13 +32,9 @@ namespace TestAPI.Authorization
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            //using (DBContext db = new DBContext())
-            //{
-            //    var salesChannel = db.SalesChannel.FirstOrDefault(l => l.Apikey == authorization);  // query db
-            //}
+            var salesChannel = database.ApiKeys.FirstOrDefault(l => l.ApiKeyValue.Equals(apiKeyValue, StringComparison.OrdinalIgnoreCase));
 
-            //if (salesChannel is null)
-            if (!apiKeyValue.Equals("Yes", StringComparison.OrdinalIgnoreCase))
+            if (salesChannel is null)
             {
                 return Task.FromResult(AuthenticateResult.Fail($"token {ConstantNames.API_TOKEN_PREFIX} not match"));
             }
