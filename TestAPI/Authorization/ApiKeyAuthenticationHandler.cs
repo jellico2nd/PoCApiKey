@@ -31,8 +31,8 @@ namespace TestAPI.Authorization
             {
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
-            
-            var salesChannel = database.ApiKeys.FirstOrDefault(l => l.ApiKeyValue == Guid.Parse(apiKeyValue).GetHashCode());
+            var hashApiKeyValue = Guid.Parse(apiKeyValue).GetHashCode();
+            var salesChannel = database.ApiKeys.FirstOrDefault(l => l.ApiKeyValue == hashApiKeyValue);
 
             if (salesChannel is null)
             {
@@ -40,11 +40,9 @@ namespace TestAPI.Authorization
             }
             else
             {
-                var id = new ClaimsIdentity(
-                    new Claim[] { new Claim("Key", apiKeyValue) },  // not safe , just as an example , should custom claims on your own
-                    Scheme.Name
-                );
-                ClaimsPrincipal principal = new ClaimsPrincipal(id);
+                var apiKeyIdentity = new ApiKeyIdentity("ApiKeyIdentity", true, ConstantNames.API_TOKEN_PREFIX);
+                apiKeyIdentity.Value = hashApiKeyValue;
+                ClaimsPrincipal principal = new ClaimsPrincipal(apiKeyIdentity);
                 var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
                 return Task.FromResult(AuthenticateResult.Success(ticket));
             }
