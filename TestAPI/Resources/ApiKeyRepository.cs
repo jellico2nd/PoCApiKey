@@ -14,7 +14,7 @@ namespace TestAPI.Resources
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<ApiKeyEntity>().HasData(new ApiKeyEntity { Id = 1, ApiKeyValue = "yes" });
+            builder.Entity<ApiKeyEntity>().HasData(new ApiKeyEntity { Id = 1, ApiKeyValue = -1514165181 });
         }
 
         public DbSet<ApiKeyEntity> ApiKeys { get; set; }

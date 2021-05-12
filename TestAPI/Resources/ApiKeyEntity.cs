@@ -8,6 +8,6 @@ namespace TestAPI.Resources
     public class ApiKeyEntity
     {
         public int Id { get; set; }
-        public string ApiKeyValue { get; set; }
+        public int ApiKeyValue { get; set; }
     }
 }

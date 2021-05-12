@@ -31,8 +31,8 @@ namespace TestAPI.Authorization
             {
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
-
-            var salesChannel = database.ApiKeys.FirstOrDefault(l => l.ApiKeyValue.Equals(apiKeyValue, StringComparison.OrdinalIgnoreCase));
+            
+            var salesChannel = database.ApiKeys.FirstOrDefault(l => l.ApiKeyValue == Guid.Parse(apiKeyValue).GetHashCode());
 
             if (salesChannel is null)
             {
